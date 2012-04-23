@@ -1,4 +1,5 @@
-d>
+<html>
+ <head>
   <script type="text/javascript" src="jquery.js"></script>
   <script type="text/javascript" src="jquery.flot.js"></script>
   <script type="text/javascript" src="jquery.flot.pie.js"></script>
@@ -6,7 +7,7 @@ d>
   window.onload = function () {
 
     var data = [ { label: "システム",  data: 10},
-                 { label: "コーディング",  data: 30},
+  	             { label: "コーディング",  data: 30},
                  { label: "デザイン",  data: 30},
                  { label: "ディレクション",  data: 30} ];
 
@@ -26,5 +27,4 @@ d>
 <div id="default" style="width:400px;height:300px"></div> 
 </body>
 </html>
-
 
