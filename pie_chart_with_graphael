@@ -1,0 +1,20 @@
+<html lang="en">
+    <head>
+        <title>gRaphaël Static Pie Chart</title>
+        <link rel="stylesheet" href="css/demo.css" type="text/css" media="screen" charset="utf-8">
+        <link rel="stylesheet" href="css/demo-print.css" type="text/css" media="print" charset="utf-8">
+        <script src="https://raw.github.com/DmitryBaranovskiy/raphael/master/raphael-min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://raw.github.com/DmitryBaranovskiy/g.raphael/master/min/g.raphael-min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://raw.github.com/DmitryBaranovskiy/g.raphael/master/min/g.pie-min.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" charset="utf-8">
+            window.onload = function () {
+                var r = Raphael("holder");
+                r.text(320, 70, "職種メータ").attr({ font: "20px 'Fontin Sans', Fontin-Sans, sans-serif" });
+                r.piechart(320, 200, 100, [30, 40, 10, 20]);
+            };
+        </script>
+    </head>
+    <body>
+        <div id="holder"></div>
+    </body>
+</html>
