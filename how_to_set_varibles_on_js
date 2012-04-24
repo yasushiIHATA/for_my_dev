@@ -1,0 +1,19 @@
+ <script type="text/javascript" charset="utf-8">
+    window.onload = function () {
+ 
+    var design = <%= @current_user.design %> - <%= @current_user.system %>
+    var coding = <%= @current_user.coding %> - <%= @current_user.design %>
+    var direction = <%= @current_user.direction %> - <%= @current_user.coding %>
+    var data = [ { label: "システム"+"  <%= @current_user.system %>%",  data: <%= @curren     t_user.system %>},
+                 { label: "デザイン"+design+"%",  data: design},
+                 { label: "コーディング"+coding+"%" ,  data: coding},
+                 { label: "ディレクション"+direction+"%",  data: direction} ];
+ 
+      $.plot($("#pie_chart"), data,{
+        series: {pie: {show: true}},
+        legend: {show:true }
+      } )
+    };
+  
+   </script>
+
