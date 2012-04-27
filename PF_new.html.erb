@@ -1,0 +1,702 @@
+<% content_for :header_metas do  %>
+<% end %>
+
+<% content_for :header_stylesheets do  %>
+<%= stylesheet_tag("#{css_dir}/jobs.css", {"media" => "screen"}) %>
+<%= stylesheet_tag("exvalidation.css", {"media" => "screen"}) %>
+  <style type="text/css">
+    .search_complete {
+      border:none;
+      background:#FFF;
+      outline:0px none black; 
+    }
+    .scrl {
+      height: 300px;
+    }
+  </style>
+<% end %>
+
+<% content_for :header_javascripts do %>
+  <script src="/javascripts/job_new.js?10" type="text/javascript"></script>
+  <%= javascript_include_tag "exvalidation.js" %>
+  <%= javascript_include_tag "exchecker-ja.js" %>
+<% end %>
+
+
+
+</div>
+<div id="middle_cover">
+   <%= render :partial => 'layer/pankuzu' %>
+</div>
+
+<!--　100％エリア -->
+<div class="dent_area">
+    <div class="dent_area_box">
+        
+        <table id="dent_tb">
+            <tr>
+                <td id="dentb_img"><!-- img -->
+				<img src="<%=FB_GRAPH_API_BASE_URI%><%=@current_user.user_id%>/picture?type=large" width="" />
+                </td>
+                <td id="dentb_name_new"><!-- name etc -->
+                    <h3 id="jobname">
+                    	案件を掲載し、フリーランサーを見つけましょう。
+                    </h3>
+                        <p style=" color: #999999; font-size: 14px; line-height: 2em; margin: 0; padding: 60px 0 0 12px;">
+                        	1、フリーランサーのプロフィールが閲覧できるようになります。<br />
+							2、仕事を依頼したいフリーランサーにメッセージを送れるようになります。<br />
+							3、あなたの仕事に興味を持ったフリーランサーからメッセージを受け取れるようになります。
+                        </p>                    <!--<table id="icon_table">
+                        <tr>
+                            <td><span class="place">&nbsp;</span></td>
+                            <td>
+                            	※会社名、所在地が表示されます
+                            </td>
+                            <td><span class="language">&nbsp;</span></td>
+                            <td>
+                                ※使用する言語が表示されます
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="price">&nbsp;</span></td>
+                            <td colspan="3">
+                            	※予算が表示されます
+                            </td>
+                        </tr>
+                    </table>-->
+                </td>
+            </tr>
+        </table>
+        
+    </div><!-- dent_area_box -->
+
+    <div class="dent_cover">&nbsp;</div>    
+</div>
+	
+  <div id="contents_prof">
+
+    <div id="lft_board">
+    	    <h3 id="name"><%= @current_user.fb_prof_name %>(<%=@current_user.birthday.age if @current_user.birthday%>)</h3>   
+		
+		    <% if action_name=="edit" %>
+		    <div class="job_lft_btn">
+		      <a href="<%=FB_APP_BASE_URI%>jobs/owner/<%=@job.id%>" target="_blank"><button>社員登録</button></a>
+		    </div>
+		    <% end %> 	
+			
+			<% if false %>
+			    <div id="friends">
+			                <!-- ここに一緒に働いた友達の写真がきます。11人表示してください。 -->
+			        <% friend_ids = @current_user.friend_ids %>
+			                <% if @workmate_ids.size==0 %>
+			                    <p><%= @current_user.fb_prof_name.to_s %>さんは、一緒に働いた友達の登録がありません</p>
+			          <span class="workmate_no_data_txt no_data_txt" style="float: left;padding-left:10px;">未登録</span>
+			                    <span class="show_ttl"><a href="javascript:void(0);" id="<%= friend_ids.join(',') %>" class="add_relate_friends" >+ 追加する</a></span>
+			                    <div id='pr_bk_bg_h'><ul id="addsfriends"></ul>
+			                    <div style="clear: both;width: 1px; height: 1px;">&nbsp;</div></div>
+			                <% else %>
+			                    <p><%= @current_user.fb_prof_name.to_s %>さんは、今まで<%= @workmate_ids.size %>人の友達と仕事をしています</p>
+			          <span class="workmate_no_data_txt no_data_txt" style="display:none;float: left;padding-left:10px;">未登録</span>
+			                    <span class="show_ttl"><a href="javascript:void(0);" id="<%= friend_ids.join(',') %>" class="add_relate_friends" >+ 追加する</a></span>
+			                             <%=raw workmates_show_delete_view_horizon(@workmate_ids,100,"addsfriends",40) %>
+			                <% end %>
+			            </div>
+			<% end %>
+    </div>
+
+  	 <!-- profileSTART -->
+    <div id="rgt_board" style="margin-bottom:50px;">
+    		
+	<% form_for @job, :url => {:action => :confirm} do |f| %>
+	<div class="form-container">
+		<span class="error" style="display:none;">
+		<% @job.errors.each do |error| %>
+		<%= error.inspect %>
+		<% end %>
+        </span>
+
+
+        
+        <div class="" id="job_resume_language_error">
+        	<div class="rgt_lst">
+		        <h3 class="job_ttl_rgt_new"><span class="must_content_delete">※サービスを快適にご利用頂くために、案件に不適切な情報があると判断した場合、<br />　その案件を削除させていただくことがありますので、ご了承ください。</span></h3>
+		      </div>
+        </div>
+  	       
+        <!-- For Error -->
+        <div class="" id="title_error" >
+				
+		<!-- title -->
+	 <div class="rgt_lst">
+            <h3 class="job_ttl_rgt_new">案件タイトル<span class="must_content">※</span><span class="note">残り<span id="title_str">30</span>文字 [30字以内]</span></h3>
+            <span class="def_txt">
+			<%=f.text_field :title,:class => "chkzenkaku", :size=>'100' %>
+			</span>
+        </div>
+		
+		
+	    </div><!-- For Error END -->
+
+
+        <!-- For Error -->
+        <div class="" id="url_error" >
+        <!-- title -->
+     	<div class="rgt_lst">
+            <h3 class="job_ttl_rgt_new">会社URL<span class="note">残り<span id="url_str">500</span>文字 [500字以内]</span></h3>
+            <span class="def_txt">
+            <%=f.text_field :company_url, :size=>'100' %>
+            </span>
+        </div>
+        </div><!-- For Error END -->
+
+
+        
+        <!-- For Error -->
+        <div class="" id="pr_error">
+		
+		<!--仕事内容-->
+         <div class="rgt_lst">
+         	<h3 class="job_ttl_rgt_new">仕事内容<span class="must_content">※</span><span class="note">残り<span id="pr_str">500</span>文字 [500字以内]</span></h3>
+         	<span class="def_txt">
+			<%#=f.text_field :pr, :size=>50 %>
+			<%=f.text_area :pr, :cols=>'100', :rows=>'5'%>
+			</span>
+        </div>
+        
+        
+        </div><!-- For Error END -->
+        
+        <!-- For Error -->
+        <div class="" id="address_and_company_error">
+		
+		
+		<!--会社名、所在地-->
+         <div class="rgt_lst">
+            <h3 class="job_ttl_rgt_new">会社名、所在地<span class="must_content">※</span></h3>
+			<span class="def_txt">
+			<table class="job_tb">
+                <tr>
+                    <td width="80">
+                        会社名
+					</td>
+                    <td>
+                        <%= f.text_field :company_name,:size=>50 %>
+					</td>
+			     </tr>
+				 		<% i=0 %>
+						<% @job.job_countries = [JobCountry.new]  if @job.job_countries.blank? %>
+						<% @job.job_countries.each do |jc| %>
+						<%#= fields_for "job[job_countries_attributes][]" ,@job.job_countries.first do |us| %>
+						<%= fields_for "job[job_countries_attributes][]" , jc ,:index=>nil do |us| %>
+                 <tr>
+                    <td width="80">
+							<%#= us.select :country_id , @countries.map{|usf|[usf.name ,usf.id.to_i]}, {:include_blank => '選択してください'} ,{:onChange=>"onChangeCountry(this,'#stateAddress#{i}')" , :class=>"cc"} %>
+							<% jc.country_id = 86 if jc.country_id.blank? %>
+							国
+					   </td>
+					   <td>
+						<span id="countryAddress">
+						<% target = "stateAddress" + i.to_s %>
+						<%= us.select :country_id , @countries.map{|usf|[usf.name ,usf.id.to_i]}, {:include_blank => '選択してください'} ,{ :class=>"selectCountry" , :target=>target } %>
+						</span>
+					   </td>
+				    </tr>
+					<tr>
+						<td width="80">住所</td>
+				        <td>
+						<% display='none' %>
+						<% display='inline' if jc.country_id==86 %>
+						<span id="stateAddress<%= i %>" class="selectAddressBox" style="display:<%= display.to_s %>;">
+							<%#= us.select :state_id , @states.map{|usf|[usf.name ,usf.id.to_i]} , {:selected => 13} , {:class=>"selectState"}%>
+							<%= us.select :state_id , @states.map{|usf|[usf.name ,usf.id.to_i]} , {} , {:class=>"selectState"}%>
+						</span>
+						<%= us.text_field :address ,{:class=>"selectAddress"} %>
+						<script type="text/javascript">countrieNum++;</script>
+						</td>
+				</tr>
+		  <% i=i+1 %>
+		  <% end %>
+		  <% end %>
+			</table>
+
+                  <div id="job_job_countries"></div><!-- 追加される住所用  -->
+                <span>
+                        <p class="addlink"><a href="#" id="add_job_countrie">+ 国・住所の追加</a></p>
+                </span>
+
+		  <span id="job_job_countries_template" style="display:none;">
+			  <table class="job_tb" style="padding: 15px 0 10px 0; border-top: solid 1px #d1d1d1;" >
+                <tr>
+                    <td width="80">
+                    	<% jobc=[JobCountry.new] %>
+						  <% jobc.each do |jcc| %>
+						  <%= fields_for "job[job_countries_attributes][]" , jcc , :index=>nil  do |uss| %>
+						  <%#= uss.select :country_id , @countries.map{|usf|[usf.name ,usf.id.to_i]}, {:include_blank => '選択してください'} ,{:onChange=>"onChangeCountry(this ,'#stateAddressTempl')" , :class=>"cc"} %>
+						  国
+					</td>
+					<td>
+						<%= uss.select :country_id , @countries.map{|usf|[usf.name ,usf.id.to_i]}, {:include_blank => '選択してください'} ,{ :class=>"selectCountry",:target=>"stateAddressTempl"} %>
+					</td>
+				</tr>
+<%if false %><!--
+			  <span id="stateAddressTempl" class="selectAddressBox" style="display:none;">
+			    <tr>
+			    	<td><span class="selectState">都道府県(日本のみ)</span></td>
+					<td><%= uss.select :state_id , @states.map{|usf|[usf.name ,usf.id.to_i]} , { :selected => 13 } , {:class=>"selectState"} %></td>
+			    </tr>
+			   </span>
+--><% end %>
+			   <tr>
+			   	<td width="80">住所</td>
+				<td>
+					<span id="stateAddressTempl" class="selectAddressBox" style="">
+						<%= uss.select :state_id , @states.map{|usf|[usf.name ,usf.id.to_i]} , {:selected =>13} , {:class=>"selectState",:style=>"display:inline;"} %>
+					</span>
+					<%= uss.text_field :address ,{:class=>"selectAddress"} %><br />
+				</td>
+	           <script type="text/javascript">countrieNum++;</script>
+			   </tr>
+			   <% end %>
+			   <% end %>
+			   </table>
+			   
+		   </span>
+		   </span>
+        </div>
+        
+        
+        </div><!-- For Error END -->
+        
+        <!-- For Error -->
+        <div class="" id="language_error">
+		
+		
+		<!-- 使用言語-->
+         <div class="rgt_lst">
+            <h3 class="job_ttl_rgt_new">使用する言語<span class="must_content">※</span><span class="must_ttl">（業務を行う上で必須となる言語を選択してください）</span></h3>
+			<span class="def_txt">
+			<table>
+				<tr>
+					<td style="border: none;">
+						<% @job.job_languages = [JobLanguage.new]  if @job.job_languages.blank? %>
+						<%# @languages.each do |lang| %>
+						<% @job.job_languages.each do |lang| %>
+						<%#= fields_for "job[job_languages_attributes][#{lang.id}]" , @job.job_languages.first, :index=>nil do |ul| %>
+						<%= fields_for "job[job_languages_attributes][]" , @job.job_languages.first,:index=>nil do |ul| %>
+						<span id="jobLangs" class="jobLang">
+							<%= ul.select :language_id , options_for_select( @languages.map{|type|[type.name,type.id]} , (lang.language_id.to_i)  ) , {:include_blank=>"選択してください"} ,{:class=>"job_add_language_class"} %>
+						   <!-- <span id="deleteLang">×</span>--><br />
+						</span>
+						<% end %>
+						<% end %>
+						
+						<span id="addedJobLangs"></span>
+						<span id="jobLangTempl" style="display:none;">
+						<select id="job_languages_attributes__language_id" class="job_add_language_class" name="">
+							<option value="">選択してください</option>
+							<% @languages.each do |lang| %>
+							<option value="<%=lang.id%>"><%=lang.name%></option>
+							<% end %>
+							</select>
+							<span id="deleteLang">×</span><br />
+						</span>
+					</td>	
+					<td valign="bottom" style="border: none; padding: 0 0 0 10px;"><p class="addlink"><a href="#" id="addJobLang">+ 言語の追加</a></p></td>
+				</tr>
+			</table>
+			</span>
+        </div>
+        
+        
+        </div><!-- For Error END -->
+        
+        <!-- For Error -->
+        <div class="" id="skills_error">
+		
+		
+		
+		<!--求めるスキル-->
+         <div class="rgt_lst">
+            <h3 class="job_ttl_rgt_new">求めるスキル<span class="must_content">※</span><span class="must_ttl">（業務上必要となるスキルを選択してください）</span></h3>
+			<span class="def_txt">
+			<span id="jobSkills">
+			      
+   				  <% @job.job_skills = [JobSkill.new]  if @job.job_skills.blank? %>
+			        <%# Skill.where(:level => "l").each do |skill| %>
+			        <% Skill.find(:all).each do |skill| %>
+			          <%= fields_for "job[job_skills_attributes][#{skill.id}]" ,@job.job_skills.first do |us| %>
+			          
+
+					  <% if skill.level.to_s == "h"%>
+					  <div class="clearbox">&nbsp;</div>
+					  <span class="skill_ttl_form"><%= skill.name %></span>
+
+					  <% else %>
+					  <div class="tb_skill_new_cont">
+							<%= us.check_box :skill_id, {:checked => @job.job_skills.map{|usf|usf.skill_id.to_i}.include?(skill.id)}, skill.id.to_i, "" %>
+							<span class="skill_labels" style="cursor: pointer;"><%= skill.name %></span>
+						</div>
+
+					  <% end %>
+					  
+                      <% if skill.level.to_s == "h"%>
+		  
+					 <% end %> 
+			        <% end %>
+			      <% end %>
+                </span>
+			</span>
+        </div>
+        
+        <div class="clearbox">&nbsp;</div>
+        </div><!-- For Error END -->
+        
+        <!-- For Error -->
+        <div class="" id="experience_error">
+        
+		
+		<!-- 求める実務経験-->
+         <div class="rgt_lst">
+            <h3 class="job_ttl_rgt_new">望ましい実務経験<span class="must_content">※</span></h3>
+			<span class="def_txt">
+				<span id="jobExp">
+				      <% @job.job_experiences = [JobExperience.new]  if @job.job_experiences.blank? %>
+				        <% Experience.all.each do |experience| %>
+				          <%= fields_for "job[job_experiences_attributes][#{experience.id}]" ,@job.job_experiences.first do |us| %>
+				          <% if experience.level.to_s == 'h' %>
+				             <span class="skill_ttl_form"><%= experience.name %></span>
+				          <% else %>
+						  <div class="tb_exp_new_cont">
+						  	<%= us.check_box :experience_id, {:checked => @job.job_experiences.map{|usf|usf.experience_id.to_i}.include?(experience.id)}, experience.id.to_i, "" %>
+							<span class="experience_labels" style="cursor: pointer;"><%= experience.name %></span>
+						</div>
+				          <% end %>
+				        <% end %>
+				      <% end %>
+					  <div class="clearbox">&nbsp;</div>
+				</span>
+			</span>
+        </div>
+        
+        
+        </div><!-- For Error END -->
+        
+        <!-- For Error -->
+        <div class="" id="budget_error">
+		
+		
+        <!-- プロジェクト予算-->
+         <div class="rgt_lst">
+            <h3 class="job_ttl_rgt_new">予算<span class="must_content">※</span><span class="must_ttl">（想定している金額の範囲を入力してください。）</span><span class="note" >[半角数字]</span></h3>
+         	    <span class="def_txt">
+				<%=f.text_field :min_budget, :size=>10,:style=>"ime-mode:disabled;" %>&nbsp;～&nbsp;<%=f.text_field :max_budget, :size=>10,:style=>"ime-mode:disabled;" %>
+				<%= f.select :currency_id, Currency.all.map{|c|[c.name,c.id]}, :selected => 10 %>
+				<% @job.budget_type=1 if @job.budget_type.blank? %>
+				／<%= f.select :budget_type, options_for_select(Job::BUDGET_TYPE.map{|c|[c[0],c[1]]} , [Job::BUDGET_TYPE.map{|d|d[0]} , @job.budget_type ]  )  %>
+				</span>
+        </div>
+        
+        <div class="clearbox">&nbsp;</div>
+        </div><!-- For Error END -->
+        
+        <!-- For Error -->
+        <div class="" id="deadline_error">
+        
+        
+		<!-- 完了予定日-->
+          <div class="rgt_lst">
+            <h3 class="job_ttl_rgt_new">納期の目安<span class="must_content">※</span><span class="must_ttl">（依頼した案件を完了してほしい目途を日付で入力してください。）</span></h3>
+			      <span class="def_txt">
+				    <% @job.deadline="" if @job.deadline.blank? %>
+			      <div style="float:left; font-size: 12px;">
+				      <input type="text" id="dateY" name="dateY" maxlength="4" value="" size="5" style="ime-mode:disabled;" onKeyup="changeDate(this,4)" OnFocusChange="changeDate(this,4)" onChange="changeDate(this,4)" />&nbsp;年
+			        <input type="text" id="dateM" name="dateM" maxlength="2" value="" size="2" style="ime-mode:disabled;" onKeyup="changeDate(this,2)" OnFocusChange="changeDate(this,2)" onChange="changeDate(this,2)" />&nbsp;月
+			        <input type="text" id="dateD" name="dateD" maxlength="2" value="" size="2" style="ime-mode:disabled;" onKeyup="changeDate(this,2)" OnFocusChange="changeDate(this,2)" onChange="changeDate(this,2)" />&nbsp;日
+			      </div>
+<!--
+				<button class="calendar" type="button">Calender</button>
+-->
+			      <%= f.hidden_field :deadline , :value=>@job.deadline.to_s  %>
+<% if false %>
+            <%= f.text_field :deadline , :value=>@job.deadline.to_s ,:style=>"display:none;"%>
+<% end %>
+			      <script>
+			        var d = $("#job_deadline").val();
+			        if(d.length !=0 ){
+			          var ymd = d.split("-");
+			          $("#dateY").val( ymd[0] );
+			          $("#dateM").val( ymd[1] );
+			          $("#dateD").val( ymd[2] );
+			        }
+			      </script>
+				    </span>
+          </div>
+        
+        
+        </div><!-- For Error END -->
+        
+        <!-- For Error -->
+        <div class="" id="condition_error">
+		
+		
+		<!--条件-->    
+        <div class="rgt_lst">
+          <h3 class="job_ttl_rgt_new">その他の条件<span class="note">残り<span id="condition_str">300</span>文字 [300字以内]</span></h3>
+			    <span class="def_txt"><%=f.text_area :condition, :rows=>'5'%></span>
+        </div>
+        
+        
+        </div><!-- For Error END -->
+		
+        <!-- For Error -->
+        <div class="" id="condition_error">
+		
+		<!-- tags -->    
+         <div class="rgt_lst">
+            <h3 class="job_ttl_rgt_new">タグ<span class="must_ttl"> (検索してほしいキーワードをスペース区切りで記入してください。)</span></h3>
+			<span class="def_txt"><%=f.text_field :tags, :value=>@job.tags %></span>
+        </div>
+        
+        </div><!-- For Error END -->
+
+
+
+
+
+
+<!-- 一旦ペンドして、キーワード検索の状況を見て実装 -->
+<!--
+<tr>
+<th><label>経験分野</label></th>
+<td>
+<span id="jobExp">
+      <% @job.job_experiences = [JobExperience.new]  if @job.job_experiences.blank? %>
+        <% Experience.all.each do |experience| %>
+          <%= fields_for "job[job_experiences_attributes][#{experience.id}]" ,@job.job_experiences.first do |us| %>
+          <% if experience.level.to_s == 'h' %>
+             <h4><%= experience.name %></h4>
+          <% else %>
+             <%= us.check_box :experience_id, {:checked => @job.job_experiences.map{|usf|usf.experience_id.to_i}.include?(experience.id)}, experience.id.to_i, "" %><%= experience.name %><br />
+          <% end %>
+        <% end %>
+      <% end %>
+</span>
+</td>
+</tr>
+
+
+<tr>
+<th><label>求めるスキル<em>(必須)</em></label></th>
+<td>
+<span id="jobSkills">
+      <% @job.job_skills = [JobSkill.new]  if @job.job_skills.blank? %>
+        <%# Skill.where(:level => "l").each do |skill| %>
+        <% Skill.find(:all).each do |skill| %>
+          <%= fields_for "job[job_skills_attributes][#{skill.id}]" ,@job.job_skills.first do |us| %>
+          <% if skill.level.to_s == "h"%>
+             <h4><%= skill.name %></h4>
+          <% else %>
+             <%= us.check_box :skill_id, {:checked => @job.job_skills.map{|usf|usf.skill_id.to_i}.include?(skill.id)}, skill.id.to_i, "" %><%= skill.name %><br />
+          <% end %>
+        <% end %>
+      <% end %>
+</span>
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+<!--
+<% form_for @job, :url => {:action => :confirm} do |f| %>
+<div class="form-container">
+<% @job.errors.each do |error| %>
+  <%= error.inspect %>
+<% end %>
+
+<table>
+<tbody>
+
+<tr>
+<th width="140"><label for="cname">会社</label></th>
+<td><%= f.text_field :company_name,:size=>50 %></td>
+</tr>
+
+<tr>
+<th><label for="title">タイトル <em>(必須)</em></label></th>
+<td><%=f.text_field :title, :size=>50%></td>
+</tr>
+
+
+<tr>
+<th><label>予算</label></th>
+<td>
+最低
+	<%=f.text_field :min_budget, :size=>5 %>
+〜最高
+	<%=f.text_field :max_budget, :size=>5 %>
+
+        <%= f.select :currency_id, Currency.all.map{|c|[c.name,c.id]}, :selected => 10 %>
+
+</td>
+</tr>
+
+<tr>
+<th><label>納期の目安</label></th>
+<td>
+	<% @job.deadline="" if @job.deadline.blank? %>
+	<input type="text" id="dateY" name="dateY" maxlength="4" value="" size="5" onKeyup="changeDate(this,4)" />年
+	<input type="text" id="dateM" name="dateM" maxlength="2" value="" size="2" onKeyup="changeDate(this,2)" />月
+	<input type="text" id="dateD" name="dateD" maxlength="2" value="" size="2" onKeyup="changeDate(this,2)" />日
+	<p class="note">[半角数字]</p>
+	<%= f.hidden_field :deadline , :value=>@job.deadline.to_s %>
+	<script>
+		var d = $("#job_deadline").val();
+		if(d.length !=0 ){
+			var ymd = d.split("-");
+			$("#dateY").val( ymd[0] );
+			$("#dateM").val( ymd[1] );
+			$("#dateD").val( ymd[2] );
+		}
+	</script>
+</td>
+</tr>
+
+<tr>
+<th><label>PR<em>(必須)</em></label></th>
+<td>
+<%#=f.text_field :pr, :size=>50 %>
+<%=f.text_area :pr, :cols=>'45', :rows=>'5'%>
+</td>
+</tr>
+
+<tr>
+<th><label>国<em>（必須）</em></label></th>
+<td>
+      <% i=0 %>
+      <% @job.job_countries = [JobCountry.new]  if @job.job_countries.blank? %>
+          <% @job.job_countries.each do |jc| %>
+          <%#= fields_for "job[job_countries_attributes][]" ,@job.job_countries.first do |us| %>
+          <%= fields_for "job[job_countries_attributes][]" , jc ,:index=>nil do |us| %>
+          <span id="countryAddress">
+	  <%#= us.select :country_id , @countries.map{|usf|[usf.name ,usf.id.to_i]}, {:include_blank => '選択してください'} ,{:onChange=>"onChangeCountry(this,'#stateAddress#{i}')" , :class=>"cc"} %>
+	  <% jc.country_id = 86 if jc.country_id.blank? %> 
+    <%= us.select :country_id , @countries.map{|usf|[usf.name ,usf.id.to_i]}, {:include_blank => '選択してください'} ,{ :class=>"selectCountry"} %><br />
+	  <% display='none' %>
+	  <% display='block' if jc.country_id==86 %>
+          <span id="stateAddress<%= i %>" class="selectAddressBox" style="display:<%= display.to_s %>;">
+		都道府県(日本のみ)<%= us.select :state_id , @states.map{|usf|[usf.name ,usf.id.to_i]} , {:selected => 13} , {:class=>"selectState"}%>
+	  </span>
+		住所<%= us.text_field :address ,{:class=>"selectAddress"} %><br />
+	  <script type="text/javascript">countrieNum++;</script>
+	  </span>
+	  <% i=i+1 %>
+          <% end %>
+          <% end %>
+          <span id="job_job_countries_template" style="display:none;">
+                <% jobc=[JobCountry.new] %>
+                <% jobc.each do |jcc| %>
+                <%= fields_for "job[job_countries_attributes][]" , jcc , :index=>nil  do |uss| %>
+                <%#= uss.select :country_id , @countries.map{|usf|[usf.name ,usf.id.to_i]}, {:include_blank => '選択してください'} ,{:onChange=>"onChangeCountry(this ,'#stateAddressTempl')" , :class=>"cc"} %>
+                <%= uss.select :country_id , @countries.map{|usf|[usf.name ,usf.id.to_i]}, {:include_blank => '選択してください'} ,{ :class=>"selectCountry"} %><br />
+                <span id="stateAddressTempl" class="selectAddressBox" style="display:none;">
+                都道府県(日本のみ)<%= uss.select :state_id , @states.map{|usf|[usf.name ,usf.id.to_i]} , {} , {:class=>"selectState"} %>
+                </span>
+                住所<%= uss.text_field :address ,{:class=>"selectAddress"} %><br />
+                <script type="text/javascript">countrieNum++;</script>
+		<% end %>
+		<% end %>
+          </span>
+	  <div id="job_job_countries"></div>
+
+<p class="addlink"><a href="#" id="add_job_countrie">+ 追加する</a></p>
+<p class="note">[複数選択可]</p>
+</td>
+</tr>
+
+
+
+<tr>
+<th><label>言語<em>（必須）</em></label></th>
+<td>
+
+<% @job.job_languages = [JobLanguage.new]  if @job.job_languages.blank? %>
+<%# @languages.each do |lang| %>
+<% @job.job_languages.each do |lang| %>
+        <%#= fields_for "job[job_languages_attributes][#{lang.id}]" , @job.job_languages.first, :index=>nil do |ul| %>
+        <%= fields_for "job[job_languages_attributes][]" , @job.job_languages.first, :index=>nil do |ul| %>
+<span id="jobLangs">
+        <%= ul.select :language_id , options_for_select( @languages.map{|type|[type.name,type.id]} , (lang.language_id.to_i)  ) , {:include_blank=>"選択してください" , :class=>"selectLangtype"} %><br />
+</span>
+        <% end %>
+<% end %>
+
+<span id="addedJobLangs"></span>
+
+<span id="jobLangTempl" style="display:none;">
+<select id="job_languages_attributes__language_id" name="">
+<option value="">選択してください</option>
+<% @languages.each do |lang| %>
+<option value="<%=lang.id%>"><%=lang.name%></option>
+<% end %>
+</select><br />
+</span>
+
+<p class="addlink"><a href="#" id="addJobLang">+言語の追加</a></p>
+<p class="note">[複数選択可]</p>
+</td>
+</tr>
+
+-->
+
+
+
+
+
+</div>
+
+<div class="submit" onclick="return formcheck()" style="width:100%;">
+	<%#=f.hidden_field :id%>
+	<input id="job_id" type="hidden" value="<%=@outid%>" name="job[id]">
+	<input id="backprof" type="hidden" value="<%=@backprof%>" name="backprof">
+	<input id="nextmode" type="hidden" value="" name="nextmode">
+        
+	<table style="width:630px">
+        <tr>
+		<% if @outid==nil %>
+        <td width="50%">
+			<button id="registerSubmit" style="margin: 10px auto;">登録して掲載する</button>
+		</td>
+        <td width="50%"><button id="normalSubmit" class="btn_save"  style="margin: 10px auto 0 auto;">一時保存する</button><button id="previewSubmit" style="margin: 5px auto 0 auto;">プレビューを表示</button></td>
+        <% else %>
+        <td width="50%"><button id="normalSubmit" class="btn_renew"  style="margin: 10px auto;">更新する</button>
+			<% if @job.opened_at==nil %>
+	    	<button id="registerSubmit" style="margin:10px auto;">登録して掲載する</button>
+			<% end %>
+	        <button id="previewSubmit" class="btn_preview" style="margin: 10px auto;">プレビューを表示</button>
+		</td>
+	   <% end %>
+		</tr>
+    </table>
+
+
+</div>
+
+
+<%end%>
+
+        <% end %>
+        
+        <div class="clearbox">&nbsp;</div>
+    </div><!-- srch_board -->
+    
+    
+  </div><!-- contents -->
+
+
+
